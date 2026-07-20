@@ -63,7 +63,9 @@ class CitizenReportRequest(BaseModel):
     description: str
     contact_info: Optional[str] = None
     date: Optional[str] = None
-
+    lat: Optional[float] = None
+    lng: Optional[float] = None
+    district: Optional[str] = None
 
 class CitizenReportResponse(BaseModel):
     report_id: str

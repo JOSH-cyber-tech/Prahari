@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
+import ModulesShowcase from './ModulesShowcase';
 // ==========================================
 // 1. TECH-TEAL CITADEL DUST & ATMOSPHERE
 // ==========================================
@@ -268,51 +269,51 @@ const Landing = ({ isVisible }) => {
       <div className="absolute bottom-0 left-0 w-full h-80 bg-gradient-to-t from-[#041E24] via-[#072A32]/90 via-30% to-transparent" />
       <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-b from-transparent to-[#041E24]" />
       {/* ================= NAVBAR ================= */}
-<nav className="absolute top-0 left-0 w-full z-50">
-  <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-10">
+      <nav className="absolute top-0 left-0 w-full z-50">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-10">
 
-    {/* Logo */}
-    <div className="inline-flex items-center gap-3 rounded-full border border-cyan-300/30 bg-white/5 backdrop-blur-xl px-5 py-2">
-            <div className="h-2 w-2 rounded-full bg-cyan-300 animate-pulse"></div>
-            <span className="text-sm font-medium text-cyan-100">
-              AI Powered • PRAHARI
-            </span>
-          </div>
+          {/* Logo */}
+          <div className="inline-flex items-center gap-3 rounded-full border border-cyan-300/30 bg-white/5 backdrop-blur-xl px-5 py-2">
+                  <div className="h-2 w-2 rounded-full bg-cyan-300 animate-pulse"></div>
+                  <span className="text-sm font-medium text-cyan-100">
+                    AI Powered • PRAHARI
+                  </span>
+                </div>
 
 
-    {/* Navigation */}
-    <div className="hidden md:flex items-center gap-12 rounded-full border border-cyan-300/15 bg-white/5 px-8 py-3 backdrop-blur-xl">
+        {/* Navigation */}
+        <div className="hidden md:flex items-center gap-12 rounded-full border border-cyan-300/15 bg-white/5 px-8 py-3 backdrop-blur-xl">
 
-      <a
-        href="#modules"
-        className="text-slate-300 transition hover:text-cyan-300"
+          <a
+            href="#modules"
+            className="text-slate-300 transition hover:text-cyan-300"
+          >
+            Modules
+          </a>
+
+          <a
+            href="#mvp"
+            className="text-slate-300 transition hover:text-cyan-300"
+          >
+            MVP
+          </a>
+
+        <Link to="/login" className="text-slate-300 transition hover:text-cyan-300">
+      Login
+    </Link>
+
+        </div>
+
+        {/* CTA */}
+        <button
+        onClick={() => navigate('/walkthrough')}
+        className="rounded-xl border border-cyan-400 bg-cyan-400 px-6 py-2.5 ..."
       >
-        Modules
-      </a>
+        Get Started
+      </button>
 
-      <a
-        href="#mvp"
-        className="text-slate-300 transition hover:text-cyan-300"
-      >
-        MVP
-      </a>
-
-     <Link to="/login" className="text-slate-300 transition hover:text-cyan-300">
-  Login
-</Link>
-
-    </div>
-
-    {/* CTA */}
-    <button
-    onClick={() => navigate('/walkthrough')}
-    className="rounded-xl border border-cyan-400 bg-cyan-400 px-6 py-2.5 ..."
-  >
-    Get Started
-  </button>
-
-  </div>
-</nav>
+      </div>
+    </nav>
       {/* Primary Landing Content Hero */}
       <div className="relative z-20 flex h-full items-center">
         <div className="max-w-3xl ml-24 -mt-12">
@@ -337,11 +338,11 @@ const Landing = ({ isVisible }) => {
           {/* Trigger CTAs */}
           <div className="mt-12 flex items-center gap-6">
            <button
-  onClick={() => navigate('/citizen/report')}
-  className="rounded-xl bg-cyan-400 px-10 py-4 text-lg font-semibold text-slate-900 ..."
->
-  Report a Scam
-</button>
+              onClick={() => navigate('/citizen/report')}
+              className="rounded-xl bg-cyan-400 px-10 py-4 text-lg font-semibold text-slate-900 ..."
+            >
+              Report a Scam
+            </button>
             <button className="rounded-xl border border-white/20 bg-white/10 backdrop-blur-xl px-10 py-4 text-lg font-medium text-white transition duration-300 hover:bg-white/20">
               <Play />
             </button>
@@ -362,10 +363,9 @@ const Landing = ({ isVisible }) => {
               <p className="mt-2 text-sm uppercase tracking-widest text-slate-300">Connected Intelligence</p>
             </div>
           </div>
-
         </div>
+       
       </div>
-      
     </motion.section>
   );
 };

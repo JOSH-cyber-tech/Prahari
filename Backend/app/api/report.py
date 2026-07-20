@@ -4,10 +4,13 @@ handoff — this just logs a report and hands back a reference ID.
 """
 
 import uuid
+from datetime import date
+import random
 
 from fastapi import APIRouter
 
 from app.models.schemas import CitizenReportRequest, CitizenReportResponse
+from app.services import geo_service
 
 router = APIRouter()
 
@@ -15,6 +18,31 @@ router = APIRouter()
 @router.post("/report", response_model=CitizenReportResponse)
 def report(payload: CitizenReportRequest):
     report_id = f"RPT-{uuid.uuid4().hex[:8].upper()}"
+    
+    lat = payload.lat
+    lng = payload.lng
+    district = payload.district
+    
+    if lat is None or lng is None:
+        lat, lng, district = geo_service.mock_geocode(payload.district or "")
+    else:
+        # If lat/lng provided but no district, we can roughly mock reverse geocode
+        if not district:
+            _, _, district = geo_service.mock_geocode("")
+
+    # Map request to ComplaintPoint dictionary
+    complaint_dict = {
+        "lat": lat,
+        "lng": lng,
+        "scam_type": payload.scam_type,
+        "amount": round(random.uniform(100, 5000), 2), # Mock amount for now
+        "risk_score": random.randint(30, 90), # Mock risk score
+        "date": payload.date or date.today().isoformat(),
+        "district": district,
+    }
+    
+    geo_service.add_complaint(complaint_dict)
+
     return CitizenReportResponse(
         report_id=report_id,
         status="received",

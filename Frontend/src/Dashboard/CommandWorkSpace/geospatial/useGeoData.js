@@ -24,6 +24,15 @@ export const useGeoData = (filters) => {
   });
 
   const debounceRef = useRef(null);
+  const [lastFetch, setLastFetch] = useState(Date.now());
+
+  // Polling mechanism
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setLastFetch(Date.now());
+    }, 15000); // Poll every 15 seconds
+    return () => clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -64,7 +73,7 @@ export const useGeoData = (filters) => {
     }, DEBOUNCE_MS);
 
     return () => clearTimeout(debounceRef.current);
-  }, [filters.scamTypes, filters.startDate, filters.endDate]);
+  }, [filters.scamTypes, filters.startDate, filters.endDate, lastFetch]);
 
   return data;
 };

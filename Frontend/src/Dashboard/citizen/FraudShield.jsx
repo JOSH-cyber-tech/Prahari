@@ -62,6 +62,12 @@ const FraudShield = () => {
   const [files, setFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [fileError, setFileError] = useState(null);
+  
+  const [district, setDistrict] = useState('');
+  const [latLng, setLatLng] = useState(null);
+  const [isLocationLoading, setIsLocationLoading] = useState(false);
+  const [reportSuccess, setReportSuccess] = useState(false);
+  
   const dragCounter = useRef(0);
   const fileInputRef = useRef(null);
 
@@ -139,6 +145,54 @@ const FraudShield = () => {
     dragCounter.current = 0;
     setIsDragging(false);
     if (e.dataTransfer.files?.length) addFiles(Array.from(e.dataTransfer.files));
+  };
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      setFileError('Geolocation is not supported by your browser.');
+      return;
+    }
+    setIsLocationLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLatLng({ lat: position.coords.latitude, lng: position.coords.longitude });
+        setDistrict('Current Location');
+        setIsLocationLoading(false);
+      },
+      () => {
+        setFileError('Unable to retrieve your location.');
+        setIsLocationLoading(false);
+      }
+    );
+  };
+
+  const handleReport = async () => {
+    if (!result || !district.trim()) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const payload = {
+        scam_type: result.categories?.[0] || 'Unknown',
+        description: text || 'Uploaded evidence',
+        district,
+        lat: latLng?.lat,
+        lng: latLng?.lng,
+        date: new Date().toISOString().split('T')[0]
+      };
+      
+      const res = await fetch('/api/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      
+      if (!res.ok) throw new Error('Failed to submit report');
+      setReportSuccess(true);
+    } catch (e) {
+      setError(e.message || 'Error submitting report.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAnalyze = async () => {
@@ -418,10 +472,32 @@ const FraudShield = () => {
         </div>
       )}
 
+      <div className="mt-4 mb-2 flex items-center gap-2">
+        <input
+          type="text"
+          value={district}
+          onChange={(e) => {
+             setDistrict(e.target.value);
+             setLatLng(null);
+          }}
+          placeholder="Enter District/City/Pincode *"
+          className="flex-1 p-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm"
+          required
+        />
+        <button
+          type="button"
+          onClick={handleGetLocation}
+          disabled={isLocationLoading}
+          className="px-4 py-3 bg-slate-100 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-200 transition-colors"
+        >
+          {isLocationLoading ? 'Locating...' : 'Use My Location'}
+        </button>
+      </div>
+
       <button
         onClick={handleAnalyze}
-        disabled={loading || (!text.trim() && files.length === 0)}
-        className="mt-4 px-6 py-3 bg-cyan-500 text-white rounded-xl font-medium disabled:opacity-50 transition-transform active:scale-[0.98]"
+        disabled={loading || (!text.trim() && files.length === 0) || !district.trim()}
+        className="mt-2 px-6 py-3 bg-cyan-500 text-white rounded-xl font-medium disabled:opacity-50 transition-transform active:scale-[0.98]"
       >
         {loading ? 'Analyzing...' : 'Analyze'}
       </button>
@@ -463,6 +539,20 @@ const FraudShield = () => {
             <h3 className="text-sm font-semibold mb-2">Why this is suspicious</h3>
             <p className="text-sm text-slate-600 whitespace-pre-wrap">{result.reason}</p>
           </div>
+          
+          {reportSuccess ? (
+             <div className="mt-6 p-4 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-sm font-medium">
+               Report successfully submitted. It will appear on the map shortly.
+             </div>
+          ) : (
+            <button
+              onClick={handleReport}
+              disabled={loading}
+              className="mt-6 w-full py-3 bg-slate-900 text-white rounded-xl font-medium hover:bg-slate-800 transition-colors"
+            >
+              Submit Scam Report
+            </button>
+          )}
         </div>
       )}
 

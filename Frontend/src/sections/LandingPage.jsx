@@ -6,6 +6,7 @@ const LandingPage = () => {
   return (
     <>
       <GateIntro />
+      
       <ModulesShowcase />
     </>
   );

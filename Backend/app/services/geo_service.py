@@ -127,6 +127,26 @@ _COMPLAINTS = _generate_complaints()
 def get_scam_types() -> list[str]:
     return list(SCAM_TYPES)
 
+def add_complaint(complaint: dict):
+    _COMPLAINTS.append(complaint)
+
+def mock_geocode(location_str: str) -> tuple[float, float, str]:
+    """
+    Mock geocoder. Matches a district string to a known district.
+    If no match, defaults to Delhi.
+    Returns (lat, lng, district_name).
+    """
+    if not location_str:
+        return DISTRICTS["Delhi"][0], DISTRICTS["Delhi"][1], "Delhi"
+        
+    loc_lower = location_str.lower()
+    for d in DISTRICTS.keys():
+        if d.lower() in loc_lower:
+            return DISTRICTS[d][0], DISTRICTS[d][1], d
+            
+    # Default to Delhi if not found
+    return DISTRICTS["Delhi"][0], DISTRICTS["Delhi"][1], "Delhi"
+
 
 def _parse_date(s: str | None) -> date | None:
     return datetime.strptime(s, "%Y-%m-%d").date() if s else None
