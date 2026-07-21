@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.core.config import settings
-from app.api import auth, analyze, entities, network, geospatial, report
+from app.api import auth, analyze, entities, network, geospatial, report, trends
 from app.db.users_db import init_db
 
 app = FastAPI(title="Prahari API", version="0.1.0")
@@ -39,6 +39,7 @@ app.include_router(entities.router, prefix="/api", tags=["entities"])
 app.include_router(report.router, prefix="/api/citizen", tags=["citizen"])
 app.include_router(network.router, prefix="/api/network", tags=["network"])
 app.include_router(geospatial.router, prefix="/api/geo", tags=["geospatial"])
+app.include_router(trends.router, prefix="/api", tags=["trends"])
 
 
 @app.get("/api/health")
