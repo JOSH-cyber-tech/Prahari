@@ -4,16 +4,22 @@ services:
     env: python
     buildCommand: pip install -r prahari_dashboard_backend/requirements.txt
     startCommand: cd prahari_dashboard_backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
+
       - key: FRONTEND_ORIGIN
         value: https://prahari-rust.vercel.app
+
       - key: GOOGLE_CLIENT_ID
         value: 465731297883-aigmh7pfqi86r7i5bqjssnsp77qvg43t.apps.googleusercontent.com
+
       - key: SESSION_SECRET
         generateValue: true
+
       - key: GEMINI_API_KEY
-        sync: false
+        value: demo
+
       - key: GROQ_API_KEY
-        sync: false
+        value: demo
