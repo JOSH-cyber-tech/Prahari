@@ -8,18 +8,12 @@ services:
       - key: PYTHON_VERSION
         value: 3.11.0
       - key: FRONTEND_ORIGIN
-        sync: false
+        value: https://prahari-rust.vercel.app
       - key: GOOGLE_CLIENT_ID
-        sync: false
+        value: 465731297883-aigmh7pfqi86r7i5bqjssnsp77qvg43t.apps.googleusercontent.com
       - key: SESSION_SECRET
         generateValue: true
       - key: GEMINI_API_KEY
         sync: false
       - key: GROQ_API_KEY
         sync: false
-      - key: USERS_DB_PATH
-        value: /var/data/users.db
-    disk:
-      name: sqlite-data
-      mountPath: /var/data
-      sizeGB: 1
