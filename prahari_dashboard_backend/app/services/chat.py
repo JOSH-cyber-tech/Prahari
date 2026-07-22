@@ -29,8 +29,20 @@ decision, not something introduced by this file -- swapping it for real
 persistence (Redis, a DB-backed session store) is a separate, larger
 change or a future direction, not fixed here.
 """
-from bot.agent import chat as _chat
-
+try:
+    from bot.agent import chat as _chat
+except ImportError:
+    def _chat(session_id: str, message: str) -> dict:
+        return {
+            "answer": "This is a placeholder response because the AI chat requires Python 3.11/3.12 (for the 'faiss-cpu' library) and cannot run on this machine's current Python 3.14 environment.",
+            "scam_type": None,
+            "confidence": None,
+            "engine": "placeholder",
+            "profile": "default",
+            "intent": "general_chat",
+            "session_id": session_id,
+            "history_length": 1
+        }
 
 def chat(session_id: str, message: str) -> dict:
     return _chat(session_id, message)

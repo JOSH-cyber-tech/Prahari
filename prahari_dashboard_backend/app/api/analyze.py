@@ -10,6 +10,11 @@ from fastapi import APIRouter
 
 from app.models.schemas import AnalyzeRequest, AnalyzeResponse
 
+# NOTE: app.services.classifier imports ml.detector / ml.llm_explainer,
+# which depend on top-level ml/, data/, llm/ packages that were never
+# actually brought into this repo (only ml_ai_overview/ was, and it's
+# missing data/synth.py, llm/client.py, etc.). Falling back to the
+# placeholder here so the server can start; see app/services/classifier.py.
 from app.services.classifier import classify
 
 router = APIRouter()

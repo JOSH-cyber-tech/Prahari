@@ -7,6 +7,9 @@ from fastapi import APIRouter
 
 from app.models.schemas import NetworkGraphResponse, NetworkClustersResponse
 
+# NOTE: app.services.graph imports dashboard.graph_model / dashboard.seed_data,
+# which don't exist anywhere in this repo. Falling back to the placeholder
+# here so the server can start; see app/services/graph.py.
 from app.services import graph as graph_service
 
 router = APIRouter()
