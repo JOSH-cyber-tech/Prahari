@@ -2,31 +2,36 @@ import React, { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import tealbk from '../tealbk.jpg';
+import prahariTL from '../prahari tl.png';
+import prahariTR from '../prahari tr.png';
+import prahariBL from '../prahari bl.png';
+import prahariBR from '../prahari br.png';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const modules = [
   {
     title: "Citizen Fraud Shield",
-    image: "src/prahari tl.png",
+    image: prahariTL,
     description:
       "Analyze suspicious messages, emails, links, and screenshots using AI-powered fraud detection. Instantly identify scams, understand the risk level, and receive actionable guidance to stay protected from cyber threats.",
   },
   {
     title: "Digital Arrest Scam Detector",
-    image: "src/prahari tr.png",
+    image: prahariTR,
     description:
       "Upload suspicious call recordings or live conversations. AI transcribes the audio, detects fake government officials and digital arrest scams, and alerts users before they become victims.",
   },
   {
     title: "Fraud Network Intelligence",
-    image: "src/prahari bl.png",
+    image: prahariBL,
     description:
       "Visualize hidden relationships between phone numbers, bank accounts, UPI IDs, email addresses, and devices using an interactive intelligence graph that uncovers organized fraud networks.",
   },
   {
     title: "Cyber Crime Heatmap",
-    image: "src/prahari br.png",
+    image: prahariBR,
     description:
       "Explore cybercrime trends across India through an interactive heatmap displaying fraud hotspots, recent incidents, and regional insights to spread awareness and improve preparedness.",
   },
@@ -139,7 +144,7 @@ const ModulesShowcase = () => {
     <div ref={containerRef} className="relative h-screen w-full overflow-hidden bg-[#041E24]">
       {/* Dynamic Background Layout */}
       <img
-        src="src/tealbk.jpg"
+        src={tealbk}
         alt="Background"
         className="absolute inset-0 h-full w-full object-cover"
       />

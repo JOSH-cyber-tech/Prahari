@@ -9,7 +9,10 @@ resumed across requests/restarts.
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path(__file__).resolve().parent.parent.parent / "users.db"
+import os
+
+_DEFAULT_DB_PATH = Path(__file__).resolve().parent.parent.parent / "users.db"
+DB_PATH = Path(os.environ.get("USERS_DB_PATH", _DEFAULT_DB_PATH))
 
 
 def get_connection() -> sqlite3.Connection:

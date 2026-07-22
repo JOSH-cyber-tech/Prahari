@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Play } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import ModulesShowcase from './ModulesShowcase';
+import tealbk from '../tealbk.jpg';
+import prahariLeft from '../prahari.png';
+import prahariRight from '../prahari copy.png';
 // ==========================================
 // 1. TECH-TEAL CITADEL DUST & ATMOSPHERE
 // ==========================================
@@ -243,7 +246,7 @@ const Landing = ({ isVisible }) => {
     >
       {/* Background Graphic Asset */}
       <img
-        src="src/tealbk.jpg"
+        src={tealbk}
         alt=""
         className="absolute inset-0 h-full w-full object-cover object-center scale-105"
       />
@@ -421,7 +424,7 @@ const GateIntro = () => {
             {/* Left Hand Portal Layer */}
             <FortressDoor side="left" stage={stage}>
               <img
-                src="src/prahari.png"
+                src={prahariLeft}
                 alt="Shield Left Wing"
                 className="h-64 md:h-96 w-auto object-contain select-none"
               />
@@ -433,7 +436,7 @@ const GateIntro = () => {
             {/* Right Hand Portal Layer */}
             <FortressDoor side="right" stage={stage}>
               <img
-                src="src/prahari copy.png"
+                src={prahariRight}
                 alt="Shield Right Wing"
                 className="h-64 md:h-96 w-auto object-contain select-none"
               />
