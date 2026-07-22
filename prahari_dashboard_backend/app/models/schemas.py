@@ -12,7 +12,7 @@ API_SPEC.md §1.2.
 """
 
 from typing import Literal, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 # ---------------------------------------------------------------------------
@@ -193,6 +193,36 @@ class GeoTrendResponse(BaseModel):
     series: list[TrendPoint]  # total complaint volume over time, across all selected scam types
     by_scam_type: list[ScamTypeTrend]
     trending_scam_type: Optional[str] = None  # fastest-growing scam type in the period
+
+
+# ---------------------------------------------------------------------------
+# Assistant chat (bot.agent.chat() -- RAG + multilingual LLM orchestration)
+# ---------------------------------------------------------------------------
+
+class ChatRequest(BaseModel):
+    session_id: str
+    message: str
+
+
+class ChatResponse(BaseModel):
+    # bot.agent.chat()'s return shape varies by intent (greeting/general_chat/
+    # language_change/informational_query/scam_check) -- these are the fields
+    # that appear on at least one path; everything except `answer` is
+    # Optional rather than guessing a fixed shape across all of them.
+    model_config = ConfigDict(extra="ignore")
+
+    answer: str
+    scam_type: Optional[str] = None
+    confidence: Optional[float] = None
+    engine: Optional[str] = None
+    profile: Optional[str] = None
+    intent: Optional[str] = None
+    session_id: Optional[str] = None
+    history_length: Optional[int] = None
+    lang_tag: Optional[str] = None
+    source_name: Optional[str] = None
+    source_url: Optional[str] = None
+    fingerprint: Optional[dict] = None
 
 
 # ---------------------------------------------------------------------------
