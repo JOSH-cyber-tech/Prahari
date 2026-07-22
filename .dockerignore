@@ -1,0 +1,5 @@
+.git
+.env
+__pycache__/
+prahari_dashboard_frontend/node_modules/
+prahari_dashboard_backend/venv/
