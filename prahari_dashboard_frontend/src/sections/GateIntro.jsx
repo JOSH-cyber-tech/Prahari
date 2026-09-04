@@ -64,7 +64,6 @@ const CitadelAtmosphere = ({ particleCount = 60 }) => {
 
   return (
     <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden select-none">
-      <div className="absolute inset-0 bg-[#041E24]" />
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[80vw] h-[80vh] bg-[radial-gradient(circle,rgba(0,255,230,0.14),transparent_65%)] blur-2xl opacity-90" />
       <canvas ref={canvasRef} className="absolute inset-0 opacity-40" />
     </div>
@@ -232,152 +231,8 @@ const DynamicCitadelLocks = ({ stage }) => {
 };
 
 // ==========================================
-// 6. PRAHARI PLATFORM CORE LANDING SECTION
-// ==========================================
-const Landing = ({ isVisible }) => {
-  if (!isVisible) return null;
-  const navigate = useNavigate();
-  return (
-    <motion.section 
-      initial={{ scale: 0.98, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1] }}
-      className="absolute inset-0 h-screen overflow-hidden bg-[#041E24] z-20"
-    >
-      {/* Background Graphic Asset */}
-      <img
-        src={tealbk}
-        alt=""
-        className="absolute inset-0 h-full w-full object-cover object-center scale-105"
-      />
-
-      {/* Dark Cover Overlay */}
-      <div className="absolute inset-0 bg-[#072A32]/45" />
-
-      {/* Radial Glow Matrix */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_55%_25%,rgba(0,255,230,0.18),transparent_65%)]" />
-
-      {/* Horizontal Vector Light Accent */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-300/10 to-transparent" />
-
-      {/* Floating Network Node Arrays */}
-      <div className="absolute left-[13%] top-[34%] h-2.5 w-2.5 rounded-full bg-cyan-300 shadow-[0_0_30px_10px_rgba(34,211,238,.8)] animate-pulse" />
-      <div className="absolute left-[38%] top-[20%] h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_25px_8px_rgba(34,211,238,.8)] animate-pulse" />
-      <div className="absolute right-[20%] top-[24%] h-3 w-3 rounded-full bg-cyan-300 shadow-[0_0_35px_10px_rgba(34,211,238,.8)] animate-pulse" />
-      <div className="absolute right-[10%] bottom-[35%] h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_25px_8px_rgba(34,211,238,.8)] animate-pulse" />
-      <div className="absolute left-[18%] bottom-[28%] h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_25px_8px_rgba(34,211,238,.8)] animate-pulse" />
-
-      {/* Atmospheric Fog Layers */}
-      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-[150%] h-64 bg-cyan-300/10 blur-[170px]" />
-      <div className="absolute bottom-0 left-0 w-full h-80 bg-gradient-to-t from-[#041E24] via-[#072A32]/90 via-30% to-transparent" />
-      <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-b from-transparent to-[#041E24]" />
-      {/* ================= NAVBAR ================= */}
-      <nav className="absolute top-0 left-0 w-full z-50">
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-10">
-
-          {/* Logo */}
-          <div className="inline-flex items-center gap-3 rounded-full border border-cyan-300/30 bg-white/5 backdrop-blur-xl px-5 py-2">
-                  <div className="h-2 w-2 rounded-full bg-cyan-300 animate-pulse"></div>
-                  <span className="text-sm font-medium text-cyan-100">
-                    AI Powered • PRAHARI
-                  </span>
-                </div>
-
-
-        {/* Navigation */}
-        <div className="hidden md:flex items-center gap-12 rounded-full border border-cyan-300/15 bg-white/5 px-8 py-3 backdrop-blur-xl">
-
-          <a
-            href="#modules"
-            className="text-slate-300 transition hover:text-cyan-300"
-          >
-            Modules
-          </a>
-
-          <a
-            href="#mvp"
-            className="text-slate-300 transition hover:text-cyan-300"
-          >
-            MVP
-          </a>
-
-        <Link to="/login" className="text-slate-300 transition hover:text-cyan-300">
-      Login
-    </Link>
-
-        </div>
-
-        {/* CTA */}
-        <button
-        onClick={() => navigate('/walkthrough')}
-        className="rounded-xl border border-cyan-400 bg-cyan-400 px-6 py-2.5 ..."
-      >
-        Get Started
-      </button>
-
-      </div>
-    </nav>
-      {/* Primary Landing Content Hero */}
-      <div className="relative z-20 flex h-full items-center">
-        <div className="max-w-3xl ml-24 -mt-12">
-          
-          {/* Badge Alert */}
-         
-          {/* Heading Elements */}
-          <h1 className="mt-8 text-7xl  font-bebas tracking-wide font-black leading-[1.05] tracking-tight text-white">
-            Protect Every Citizen.<br />
-            <span className="text-cyan-300">Detect Every Scam.</span>
-          </h1>
-
-          {/* Platform Explainer */}
-          <p className="mt-8 max-w-2xl font-montenegrin text-xl leading-9 text-slate-100">
-            Prahari is India's AI-powered fraud intelligence platform helping
-            citizens, villages, farmers and senior citizens stay protected from
-            digital fraud. Whether online or offline, Prahari empowers everyone
-            to report scams, detect fraud networks, identify crime hotspots and
-            generate intelligence for law enforcement.
-          </p>
-
-          {/* Trigger CTAs */}
-          <div className="mt-12 flex items-center gap-6">
-           <button
-              onClick={() => navigate('/citizen/report')}
-              className="rounded-xl bg-cyan-400 px-10 py-4 text-lg font-semibold text-slate-900 ..."
-            >
-              Report a Scam
-            </button>
-            <button className="rounded-xl border border-white/20 bg-white/10 backdrop-blur-xl px-10 py-4 text-lg font-medium text-white transition duration-300 hover:bg-white/20">
-              <Play />
-            </button>
-          </div>
-
-          {/* Metrics Footer */}
-          <div className="mt-16 flex gap-16">
-            <div>
-              <h2 className="text-4xl font-bold text-cyan-300">24/7</h2>
-              <p className="mt-2 text-sm uppercase tracking-widest text-slate-300">AI Monitoring</p>
-            </div>
-            <div>
-              <h2 className="text-4xl font-bold text-cyan-300">Offline</h2>
-              <p className="mt-2 text-sm uppercase tracking-widest text-slate-300">Village Support</p>
-            </div>
-            <div>
-              <h2 className="text-4xl font-bold text-cyan-300"> Modules</h2>
-              <p className="mt-2 text-sm uppercase tracking-widest text-slate-300">Connected Intelligence</p>
-            </div>
-          </div>
-        </div>
-       
-      </div>
-    </motion.section>
-  );
-};
-
-// ==========================================
-// 7. MAIN TIMELINE COORDINATION COMPONENT
-// ==========================================
-const GateIntro = () => {
-  const [stage, setStage] = useState('initial');
+const GateIntro = ({ onComplete }) => {
+  const [stage, setStage] = useState('locked'); // locked -> unlocking -> opening -> revealed
   const [gateTremor, setGateTremor] = useState(false);
 
   useEffect(() => {
@@ -392,7 +247,10 @@ const GateIntro = () => {
       setStage('opening');
     }, 2600);
 
-    const finishedTimer = setTimeout(() => setStage('revealed'), 5400);
+    const finishedTimer = setTimeout(() => {
+      setStage('revealed');
+      if (onComplete) onComplete();
+    }, 5400);
 
     return () => {
       clearTimeout(unlockTimer);
@@ -400,15 +258,12 @@ const GateIntro = () => {
       clearTimeout(openTimer);
       clearTimeout(finishedTimer);
     };
-  }, []);
+  }, [onComplete]);
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-black text-white select-none [perspective:1400px]">
+    <div className={`fixed inset-0 z-[9999] overflow-hidden text-white select-none [perspective:1400px] ${stage === 'revealed' ? 'pointer-events-none' : 'bg-transparent'}`}>
       {/* Atmosphere particles colored explicitly cyan */}
       <CitadelAtmosphere particleCount={stage === 'opening' ? 95 : 45} />
-
-      {/* Your Landing Content is nested cleanly underneath to pick up light streams */}
-      <Landing isVisible={stage === 'opening' || stage === 'revealed'} />
 
       <AnimatePresence>
         {stage !== 'revealed' && (

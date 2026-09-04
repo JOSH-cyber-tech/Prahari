@@ -141,14 +141,8 @@ const ModulesShowcase = () => {
   }, { scope: containerRef });
 
   return (
-    <div ref={containerRef} className="relative h-screen w-full overflow-hidden bg-[#041E24]">
-      {/* Dynamic Background Layout */}
-      <img
-        src={tealbk}
-        alt="Background"
-        className="absolute inset-0 h-full w-full object-cover"
-      />
-      <div className="absolute inset-0 bg-[#041E24]/85 z-10" />
+    <div ref={containerRef} className="relative h-screen w-full overflow-hidden bg-transparent">
+      {/* Dynamic Background Layout (Removed opaque layers to blend with global background) */}
 
       {/* INTRO TITLE LAYER */}
       <div className="intro-title absolute inset-0 z-30 flex flex-col items-center justify-center text-center px-4 pointer-events-none">
