@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://prahari-production.up.railway.app/api/$1"
+      "destination": "https://prahari-backend-55aq.onrender.com/api/$1"
     },
     {
       "source": "/(.*)",
