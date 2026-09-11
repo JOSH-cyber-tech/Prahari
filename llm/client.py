@@ -131,20 +131,13 @@ _ENGINE_FNS = {
     "ollama": _fallback_generate,
 }
 
-# TEMPORARY (demo/testing quota workaround): Groq tried first by default,
-# since its free tier has much higher headroom than Gemini's 20/day cap --
-# Gemini remains a real, still-available fallback, not removed. Scoped,
-# not blanket: bot/agent.py::classify_intent() passes prefer_gemini=True
-# instead, because that is the one call site where engine choice affects a
-# real decision (which intent branch fires, i.e. whether ScamDetector even
-# runs for a message that doesn't trip the deterministic rule-based
-# backstop) rather than just output wording. Confirmed via eval_rag_testset.py
-# that applying Groq-first there too caused a real recall regression
-# (expert_scam 1.00->0.90, one case misrouted to general_chat) -- reverted
-# for that call site specifically, kept everywhere else. Revert this whole
-# workaround by making "gemini" the default order once Gemini quota stops
-# being the binding constraint.
-_DEFAULT_ORDER = ["groq", "gemini", "nemotron", "ollama"]
+# Switched 2026-09-11: Gemini (2.5 Flash) is now the default primary engine,
+# Groq the fallback. Previously Groq was tried first as a quota workaround
+# (Gemini's free tier caps at 20 req/day) -- that reasoning still applies, so
+# watch for 429s under real demo traffic. _GEMINI_FIRST_ORDER is now
+# identical to _DEFAULT_ORDER; prefer_gemini no longer changes behavior
+# (bot/agent.py::classify_intent() still passes it, harmlessly redundant).
+_DEFAULT_ORDER = ["gemini", "groq", "nemotron", "ollama"]
 _GEMINI_FIRST_ORDER = ["gemini", "groq", "nemotron", "ollama"]
 
 
