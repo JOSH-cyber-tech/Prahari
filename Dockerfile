@@ -1,6 +1,20 @@
 # Use the official Python 3.11 slim image
 FROM python:3.11-slim
 
+RUN apt-get update && apt-get install -y \
+    tesseract-ocr \
+    tesseract-ocr-mal \
+    tesseract-ocr-tam \
+    tesseract-ocr-ori \
+    tesseract-ocr-ben \
+    tesseract-ocr-hin \
+    tesseract-ocr-guj \
+    tesseract-ocr-pan \
+    tesseract-ocr-tel \
+    tesseract-ocr-kan \
+    tesseract-ocr-mar \
+    && rm -rf /var/lib/apt/lists/*
+
 # Set the working directory to /code
 WORKDIR /code
 
