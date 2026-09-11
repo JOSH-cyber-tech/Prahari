@@ -7,8 +7,10 @@ import uuid
 from datetime import date
 import random
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Request
 
+from app.core.deps import get_current_user
+from app.core.limiter import limiter
 from app.models.schemas import CitizenReportRequest, CitizenReportResponse
 from app.services import geo_service
 
@@ -16,7 +18,8 @@ router = APIRouter()
 
 
 @router.post("/report", response_model=CitizenReportResponse)
-def report(payload: CitizenReportRequest):
+@limiter.limit("10/hour")
+def report(request: Request, payload: CitizenReportRequest, _user: dict = Depends(get_current_user)):
     report_id = f"RPT-{uuid.uuid4().hex[:8].upper()}"
     
     lat = payload.lat

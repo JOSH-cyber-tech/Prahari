@@ -44,13 +44,19 @@ def google_login(payload: GoogleAuthRequest, response: Response):
     name = claims.get("name", email)
     picture = claims.get("picture")
 
+    # The only place a user's role is decided -- via the server-side
+    # GOVERNMENT_EMAILS allowlist, never a value the client sent. Recomputed
+    # on every login so removing an email from the allowlist actually
+    # revokes government access next sign-in, not just for new accounts.
+    role = "government" if email.lower() in settings.government_email_set else "citizen"
+
     # Upsert covers both sign-up (first time we see this google_sub) and
     # login (existing user) with the same call.
-    user = upsert_user(google_sub, email, name, picture)
+    user = upsert_user(google_sub, email, name, picture, role)
 
     _set_session_cookie(response, google_sub)
 
-    return UserResponse(email=user["email"], name=user["name"], picture=user["picture"])
+    return UserResponse(email=user["email"], name=user["name"], picture=user["picture"], role=user["role"])
 
 
 @router.get("/me", response_model=UserResponse)
@@ -67,7 +73,7 @@ def me(request: Request):
     if not user:
         raise HTTPException(status_code=401, detail="User not found.")
 
-    return UserResponse(email=user["email"], name=user["name"], picture=user["picture"])
+    return UserResponse(email=user["email"], name=user["name"], picture=user["picture"], role=user["role"])
 
 
 @router.post("/logout")

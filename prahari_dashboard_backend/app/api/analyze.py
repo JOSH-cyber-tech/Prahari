@@ -8,6 +8,7 @@ both removed.
 
 from fastapi import APIRouter, Request
 
+from app.core.limiter import limiter
 from app.models.schemas import AnalyzeRequest, AnalyzeResponse
 from app.services.classifier import classify
 
@@ -15,6 +16,7 @@ router = APIRouter()
 
 
 @router.post("/analyze", response_model=AnalyzeResponse)
+@limiter.limit("20/minute")
 async def analyze(request: Request):
     # FraudShield.jsx posts application/json when there's no attachment,
     # but switches to multipart/form-data (text/source_type/mode fields +

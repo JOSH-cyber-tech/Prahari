@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
     refreshUser();
   }, [refreshUser]);
 
-  const loginWithGoogleCredential = useCallback(async (credential, role = 'citizen') => {
+  const loginWithGoogleCredential = useCallback(async (credential) => {
     const res = await fetch('/api/auth/google', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -50,11 +50,14 @@ export const AuthProvider = ({ children }) => {
       const err = await res.json().catch(() => null);
       throw new Error(err?.detail || `Sign-in failed (${res.status})`);
     }
+    // role comes back from the backend (server-assigned via the
+    // GOVERNMENT_EMAILS allowlist at login) -- it is never something this
+    // client chooses. Whichever tab was selected on the login screen only
+    // picks where we redirect afterwards; it has no bearing on access.
     const data = await res.json();
-    const taggedUser = { ...data, role };
     sessionStorage.removeItem(MOCK_SESSION_KEY);
-    setUser(taggedUser);
-    return taggedUser;
+    setUser(data);
+    return data;
   }, []);
 
   const loginWithMockCredentials = useCallback((email, password, role) => {

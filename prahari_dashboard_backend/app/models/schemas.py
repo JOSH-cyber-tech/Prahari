@@ -237,6 +237,11 @@ class UserResponse(BaseModel):
     email: str
     name: str
     picture: Optional[str] = None
+    # Server-assigned at login time (see app/api/auth.py) -- the frontend
+    # must treat this as the source of truth, never the role a user picked
+    # on the login screen. Command Workspace routes authorize against this
+    # value read back from the DB/session, not anything the client sends.
+    role: Literal["citizen", "government"] = "citizen"
 
 
 # ---------------------------------------------------------------------------

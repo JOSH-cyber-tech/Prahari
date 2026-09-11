@@ -6,6 +6,11 @@ google-auth>=2.32
 requests>=2.32
 itsdangerous>=2.2
 
+# Per-IP rate limiting on /api/analyze, /api/chat, /api/citizen/report --
+# these can trigger paid LLM calls or write unauthenticated data, and had
+# no request throttling at all before this was added.
+slowapi>=0.1.9
+
 # Added for the real AI/ML wiring (app/services/classifier.py, graph.py):
 # this backend now imports ml/, graph/, dashboard/, llm/ from the repo root
 # (see the sys.path setup in app/main.py), which need these at runtime.

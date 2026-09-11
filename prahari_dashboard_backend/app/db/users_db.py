@@ -30,24 +30,37 @@ def init_db() -> None:
                 email TEXT NOT NULL,
                 name TEXT NOT NULL,
                 picture TEXT,
+                role TEXT NOT NULL DEFAULT 'citizen',
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP
             )
             """
         )
+        # A users.db from before the role column existed won't have it --
+        # CREATE TABLE IF NOT EXISTS is a no-op on an existing table, so add
+        # it explicitly. Already-applied is the expected steady state, not
+        # an error.
+        try:
+            conn.execute("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'citizen'")
+        except sqlite3.OperationalError:
+            pass
 
 
-def upsert_user(google_sub: str, email: str, name: str, picture: str | None) -> sqlite3.Row:
+# role is recomputed from the government-email allowlist on every login
+# (see app/api/auth.py) and passed in here -- this never trusts a role the
+# client sent.
+def upsert_user(google_sub: str, email: str, name: str, picture: str | None, role: str) -> sqlite3.Row:
     with get_connection() as conn:
         conn.execute(
             """
-            INSERT INTO users (google_sub, email, name, picture)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO users (google_sub, email, name, picture, role)
+            VALUES (?, ?, ?, ?, ?)
             ON CONFLICT(google_sub) DO UPDATE SET
                 email = excluded.email,
                 name = excluded.name,
-                picture = excluded.picture
+                picture = excluded.picture,
+                role = excluded.role
             """,
-            (google_sub, email, name, picture),
+            (google_sub, email, name, picture, role),
         )
         conn.commit()
         row = conn.execute(

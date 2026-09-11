@@ -34,8 +34,13 @@ const Login = () => {
   const handleGoogleSuccess = async (credentialResponse) => {
     setError(null);
     try {
-      await loginWithGoogleCredential(credentialResponse.credential, role);
-      goAfterLogin();
+      // The backend decides the real role (server-side allowlist) -- redirect
+      // off what it actually returned, not the tab the user had selected,
+      // so a citizen who clicks "Government & Police" lands somewhere valid
+      // instead of bouncing through ProtectedRoute's mismatch redirect.
+      const loggedInUser = await loginWithGoogleCredential(credentialResponse.credential);
+      const home = loggedInUser.role === 'government' ? '/command' : '/citizen/fraud-shield';
+      navigate(location.state?.from?.pathname || home, { replace: true });
     } catch (e) {
       setError(e.message || 'Sign-in failed. Please try again.');
     }

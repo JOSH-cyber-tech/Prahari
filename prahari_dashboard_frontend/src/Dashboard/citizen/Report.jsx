@@ -25,6 +25,9 @@ const Report = () => {
         }),
       });
       if (!res.ok) {
+        if (res.status === 401) {
+          throw new Error("Please sign in with Google to submit a report (demo/mock sessions can't submit reports).");
+        }
         const err = await res.json().catch(() => null);
         throw new Error(err?.message || `Request failed (${res.status})`);
       }

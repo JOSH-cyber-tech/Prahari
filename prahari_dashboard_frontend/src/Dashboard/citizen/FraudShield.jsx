@@ -187,7 +187,12 @@ const FraudShield = () => {
         body: JSON.stringify(payload),
       });
       
-      if (!res.ok) throw new Error('Failed to submit report');
+      if (!res.ok) {
+        if (res.status === 401) {
+          throw new Error('Please sign in with Google to submit a report (demo/mock sessions can\'t submit reports).');
+        }
+        throw new Error('Failed to submit report');
+      }
       setReportSuccess(true);
     } catch (e) {
       setError(e.message || 'Error submitting report.');

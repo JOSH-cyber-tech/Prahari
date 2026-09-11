@@ -31,9 +31,19 @@ class Settings(BaseSettings):
     google_client_id: str = ""
     session_secret: str = "dev-insecure-secret-change-me"
 
+    # Comma-separated allowlist of emails granted the "government" role at
+    # login (app/api/auth.py). Everyone else is always "citizen" -- role is
+    # never taken from the client. Empty by default so a fresh deploy has
+    # no government accounts until this is explicitly set.
+    government_emails: str = ""
+
     @property
     def google_auth_configured(self) -> bool:
         return bool(self.google_client_id)
+
+    @property
+    def government_email_set(self) -> set[str]:
+        return {e.strip().lower() for e in self.government_emails.split(",") if e.strip()}
 
 
 settings = Settings()
