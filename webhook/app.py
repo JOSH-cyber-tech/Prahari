@@ -84,9 +84,13 @@ async def _warm_up_models():
     below (bot.agent inside /webhook) was already written to preserve.
     """
     try:
-        logging.info("Pre-warming RAG stack (bot.agent) and OCR reader...")
+        logging.info("Pre-warming RAG stack (bot.agent)...")
         import bot.agent  # noqa: F401 — import side effect loads bge-m3
-        _get_ocr_reader()
+        if _IMAGE_OCR_DISABLED:
+            logging.info("DISABLE_IMAGE_OCR=1 — skipping EasyOCR reader pre-warm entirely.")
+        else:
+            logging.info("Pre-warming OCR reader...")
+            _get_ocr_reader()
         logging.info("Pre-warming complete — models are warm.")
     except Exception as e:
         logging.warning(f"Model pre-warm failed (will lazy-load on first request instead): {e}")
@@ -1081,10 +1085,33 @@ def _translate_reply_to_preference(reply_text: str, lang_tag: str) -> str:
 # other 6, not because the hallucination risk stopped applying.
 _OCR_RELIABLE_LANGUAGES = {"en-IN", "hi-IN", "mr-IN", "bn-IN", "gu-IN", "kn-IN", "ml-IN", "pa-IN", "or-IN", "ur-IN"}
 
+# Kill switch, added 2026-09-11: EasyOCR pulls in torch as a transitive
+# dependency, and _warm_up_models() (see its doc comment) loads its model
+# eagerly at process startup -- a real, measurable RAM cost even on a paid
+# tier, not just Render's free tier. Independent of the accuracy-based
+# per-language gate above -- this is a resource decision, not an accuracy
+# one, and when set it skips loading EasyOCR entirely (both the startup
+# pre-warm and any later on-demand load), not just hiding the feature from
+# users. Default "0" (unchanged existing behavior, OCR enabled) so this is
+# opt-in, not a silent behavior change.
+_IMAGE_OCR_DISABLED = os.environ.get("DISABLE_IMAGE_OCR", "0") == "1"
+
 _OCR_UNRELIABLE_TEMPLATE_EN = (
     "Text recognition for {language} isn't reliable enough yet — please type the message, "
     "or use voice input instead."
 )
+
+_OCR_UNAVAILABLE_TEMPLATE_EN = (
+    "Image scanning is temporarily unavailable on this deployment — please type the message, "
+    "or use voice input instead."
+)
+
+
+def _ocr_unavailable_reply(lang_tag: str) -> str:
+    if lang_tag == "en-IN":
+        return _OCR_UNAVAILABLE_TEMPLATE_EN
+    translated = _translate_text_sarvam(_OCR_UNAVAILABLE_TEMPLATE_EN, "en-IN", _to_sarvam_lang_code(lang_tag))
+    return translated or _OCR_UNAVAILABLE_TEMPLATE_EN
 
 
 def _ocr_unreliable_reply(lang_tag: str) -> str:
@@ -1366,6 +1393,14 @@ async def whatsapp_webhook(
             logging.info(f"whatsapp session={session_id} | first contact, sent language menu")
             return Response(content="", media_type="application/xml")
         lang_tag = _lang_prefs[session_id]
+
+        # Kill switch (see _IMAGE_OCR_DISABLED's doc comment): never call into
+        # _extract_media_content/_ocr_image for an image at all when set, so
+        # EasyOCR never loads on this path even lazily on first request.
+        if NumMedia != "0" and MediaContentType0.lower().startswith("image/") and _IMAGE_OCR_DISABLED:
+            _send_whatsapp_reply(From, _ocr_unavailable_reply(lang_tag))
+            logging.info(f"whatsapp session={session_id} | image upload blocked, OCR disabled on this deployment")
+            return Response(content="", media_type="application/xml")
 
         # Real, measured OCR-accuracy gate (see _OCR_RELIABLE_LANGUAGES' doc
         # comment): for the 9 languages where OCR was proven unreliable
@@ -1794,6 +1829,13 @@ async def webhook(
             logging.info(f"webhook session={session_id} | first contact, sent language menu")
             return Response(content="", media_type="application/xml")
         lang_tag = _lang_prefs[session_id]
+
+        # Same kill switch as /whatsapp/webhook -- see _IMAGE_OCR_DISABLED's
+        # doc comment.
+        if NumMedia != "0" and MediaContentType0.lower().startswith("image/") and _IMAGE_OCR_DISABLED:
+            _send_whatsapp_reply(From, _ocr_unavailable_reply(lang_tag))
+            logging.info(f"webhook session={session_id} | image upload blocked, OCR disabled on this deployment")
+            return Response(content="", media_type="application/xml")
 
         # Same real, measured OCR-reliability gate as /whatsapp/webhook --
         # see _OCR_RELIABLE_LANGUAGES' doc comment for the audit this is
