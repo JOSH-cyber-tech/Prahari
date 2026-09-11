@@ -181,7 +181,7 @@ const FraudShield = () => {
         date: new Date().toISOString().split('T')[0]
       };
       
-      const res = await fetch('/api/report', {
+      const res = await fetch('/api/citizen/report', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
