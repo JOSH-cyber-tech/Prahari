@@ -6,8 +6,11 @@ import FilterPanel, { isoDaysAgo } from './geospatial/FilterPanel';
 import TrendChart from './geospatial/TrendChart';
 import DistrictPanel from './geospatial/DistrictPanel';
 import { useGeoData, useStaticGeoResources } from './geospatial/useGeoData';
+import { useAuth } from '../../context/AuthContext';
 
 const GeoSpatial = () => {
+  const { user } = useAuth();
+  const isDemoUser = Boolean(user?.isDemo || user?.isMock);
   const [filters, setFilters] = useState({
     scamTypes: [],
     startDate: isoDaysAgo(29),
@@ -18,8 +21,8 @@ const GeoSpatial = () => {
   const [showChoropleth, setShowChoropleth] = useState(true);
   const [selectedDistrictName, setSelectedDistrictName] = useState(null);
 
-  const { districtsRaw, scamTypes } = useStaticGeoResources();
-  const { complaints, districtStats, trend, loading, error } = useGeoData(filters);
+  const { districtsRaw, scamTypes } = useStaticGeoResources(isDemoUser);
+  const { complaints, districtStats, trend, loading, error } = useGeoData(filters, isDemoUser);
 
   const selectedDistrict = useMemo(() => {
     if (!selectedDistrictName) return null;

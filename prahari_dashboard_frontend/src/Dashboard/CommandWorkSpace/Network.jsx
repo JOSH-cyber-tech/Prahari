@@ -1,14 +1,27 @@
 // src/Dashboard/CommandWorkSpace/Network.jsx
 import { useEffect, useState } from 'react';
 import { Network as NetIcon, Users, GitCommit, AlertTriangle, Radio, Loader2, ServerCrash } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { MOCK_NETWORK_GRAPH, MOCK_NETWORK_CLUSTERS } from './mockCommandData';
 
 const Network = () => {
+  const { user } = useAuth();
+  const isDemoUser = Boolean(user?.isDemo || user?.isMock);
   const [graph, setGraph] = useState(null);
   const [clusters, setClusters] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Demo/mock logins never get a real backend session, so the protected
+    // /api/network/* routes always 401 for them -- show sample data instead.
+    if (isDemoUser) {
+      setGraph(MOCK_NETWORK_GRAPH);
+      setClusters(MOCK_NETWORK_CLUSTERS);
+      setLoading(false);
+      return;
+    }
+
     const load = async () => {
       setLoading(true);
       setError(null);
@@ -28,7 +41,7 @@ const Network = () => {
       }
     };
     load();
-  }, []);
+  }, [isDemoUser]);
 
   if (loading) {
     return (

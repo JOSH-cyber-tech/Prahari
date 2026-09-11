@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import indiaDistrictsUrl from '../../../assets/geo/india_districts.geojson?url';
+import { MOCK_SCAM_TYPES, MOCK_GEO_COMPLAINTS, MOCK_GEO_DISTRICT_STATS, MOCK_GEO_TREND } from '../mockCommandData';
 
 const DEBOUNCE_MS = 350;
 
@@ -14,7 +15,7 @@ const buildQuery = ({ scamTypes, startDate, endDate }) => {
 // Fetches complaints/districts/trend for the given filters, debounced so
 // rapid filter changes (e.g. toggling several scam-type checkboxes) don't
 // fire a request per keystroke/click.
-export const useGeoData = (filters) => {
+export const useGeoData = (filters, isDemoUser = false) => {
   const [data, setData] = useState({
     complaints: [],
     districtStats: [],
@@ -28,13 +29,27 @@ export const useGeoData = (filters) => {
 
   // Polling mechanism
   useEffect(() => {
+    if (isDemoUser) return;
     const intervalId = setInterval(() => {
       setLastFetch(Date.now());
     }, 15000); // Poll every 15 seconds
     return () => clearInterval(intervalId);
-  }, []);
+  }, [isDemoUser]);
 
   useEffect(() => {
+    // Demo/mock logins never get a real backend session, so the protected
+    // /api/geo/* routes always 401 for them -- show sample data instead.
+    if (isDemoUser) {
+      setData({
+        complaints: MOCK_GEO_COMPLAINTS.complaints,
+        districtStats: MOCK_GEO_DISTRICT_STATS.districts,
+        trend: MOCK_GEO_TREND,
+        loading: false,
+        error: null,
+      });
+      return;
+    }
+
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     debounceRef.current = setTimeout(async () => {
@@ -73,14 +88,14 @@ export const useGeoData = (filters) => {
     }, DEBOUNCE_MS);
 
     return () => clearTimeout(debounceRef.current);
-  }, [filters.scamTypes, filters.startDate, filters.endDate, lastFetch]);
+  }, [filters.scamTypes, filters.startDate, filters.endDate, lastFetch, isDemoUser]);
 
   return data;
 };
 
 // District boundary GeoJSON + the canonical scam-type list rarely/never
 // change, so these are fetched once, independent of filter state.
-export const useStaticGeoResources = () => {
+export const useStaticGeoResources = (isDemoUser = false) => {
   const [districtsRaw, setDistrictsRaw] = useState(null);
   const [scamTypes, setScamTypes] = useState([]);
 
@@ -96,17 +111,24 @@ export const useStaticGeoResources = () => {
         if (!cancelled) setDistrictsRaw({ type: 'FeatureCollection', features: [] });
       });
 
+    if (isDemoUser) {
+      setScamTypes(MOCK_SCAM_TYPES);
+      return () => {
+        cancelled = true;
+      };
+    }
+
     fetch('/api/geo/scam-types')
-      .then((res) => res.json())
+      .then((res) => (res.ok ? res.json() : null))
       .then((json) => {
-        if (!cancelled) setScamTypes(json.scam_types);
+        if (!cancelled && json?.scam_types) setScamTypes(json.scam_types);
       })
       .catch(() => {});
 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isDemoUser]);
 
   return { districtsRaw, scamTypes };
 };
