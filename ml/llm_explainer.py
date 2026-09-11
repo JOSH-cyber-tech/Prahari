@@ -19,8 +19,6 @@ import logging
 import time
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as _FutureTimeoutError
 
-from llm.client import generate
-
 logger = logging.getLogger(__name__)
 
 # Only bother calling the LLM when there's something non-trivial to explain —
@@ -55,6 +53,7 @@ def should_explain(risk_level):
 
 
 def _generate_explanation(text, risk_level, signals):
+    from llm.client import generate  # lazy -- see llm/client.py's own DISABLE_HEAVY_MODELS gate
     signals_str = "; ".join(signals) if signals else "general risk language in the message"
     prompt = _PROMPT_TEMPLATE.format(level=risk_level, text=text, signals=signals_str)
     return generate(prompt, retries=1)

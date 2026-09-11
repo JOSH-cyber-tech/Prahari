@@ -2,13 +2,23 @@ import logging
 import os
 import time
 
-# torch, FlagEmbedding, and faiss must load before gRPC on Windows to avoid DLL conflict
-try:
-    import torch as _torch  # noqa: F401
-    from FlagEmbedding import BGEM3FlagModel as _BGE  # noqa: F401
-    import faiss as _faiss  # noqa: F401
-except ImportError:
-    pass
+_DISABLE_HEAVY_MODELS = os.environ.get("DISABLE_HEAVY_MODELS", "0") == "1"
+
+# torch, FlagEmbedding, and faiss must load before gRPC on Windows to avoid
+# DLL conflict -- but this ran UNCONDITIONALLY on every platform, including
+# Linux/Render, where the Windows DLL-ordering bug doesn't exist at all and
+# this was just three unused imports (noqa'd, never referenced again) eating
+# real startup RAM for nothing. Now scoped to Windows only, and skippable
+# via DISABLE_HEAVY_MODELS=1 even there. rag/embedder.py lazy-imports
+# FlagEmbedding itself now, so this block importing it here first is no
+# longer required for that module's own behavior either way.
+if os.name == "nt" and not _DISABLE_HEAVY_MODELS:
+    try:
+        import torch as _torch  # noqa: F401
+        from FlagEmbedding import BGEM3FlagModel as _BGE  # noqa: F401
+        import faiss as _faiss  # noqa: F401
+    except ImportError:
+        pass
 
 import requests
 from google import genai as google_genai
