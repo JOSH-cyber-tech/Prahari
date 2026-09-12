@@ -221,7 +221,7 @@ const FraudShield = () => {
         const formData = new FormData();
         formData.append('text', text);
         formData.append('source_type', sourceType);
-        formData.append('mode', 'offline');
+        formData.append('mode', 'online');
         files.forEach(({ file }) => formData.append('evidence', file));
 
         analyzeRes = await fetch('/api/analyze', { method: 'POST', body: formData });
@@ -229,7 +229,7 @@ const FraudShield = () => {
         analyzeRes = await fetch('/api/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text, source_type: sourceType, mode: 'offline' }),
+          body: JSON.stringify({ text, source_type: sourceType, mode: 'online' }),
         });
       }
 
