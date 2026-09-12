@@ -420,6 +420,15 @@ ACTION_BY_LEVEL = {
 # same underlying score, not a lookup of this module's risk_level.
 SUSPICIOUS_THRESHOLD = 0.5
 
+# Lowered from 0.7 -> 0.6 by request: messages that only clear SUSPICIOUS by
+# a small margin (0.6-0.7) are now escalated straight to FRAUD/SCAM instead
+# of stopping at SUSPICIOUS. This trades more false positives on borderline
+# messages for catching more real scams earlier -- re-run eval_testset.py
+# against rakshak_eval_testset.json if this needs re-tuning; the 0.7 value
+# it replaces was not derived from that eval run the way SUSPICIOUS_THRESHOLD
+# above was, so there's no equivalent margin analysis to preserve here.
+FRAUD_THRESHOLD = 0.6
+
 
 # Phrases that indicate a LEGITIMATE informational message rather than a request.
 # e.g. a real bank tells you your OTP and warns you NOT to share it.
@@ -563,7 +572,7 @@ class ScamDetector:
         if NEAR_DETERMINISTIC_RULES.keys() & rules.keys():
             score = max(score, 0.95)
 
-        if score >= 0.7:
+        if score >= FRAUD_THRESHOLD:
             level = "FRAUD"
         elif score >= SUSPICIOUS_THRESHOLD:
             level = "SUSPICIOUS"
