@@ -420,14 +420,20 @@ ACTION_BY_LEVEL = {
 # same underlying score, not a lookup of this module's risk_level.
 SUSPICIOUS_THRESHOLD = 0.5
 
-# Lowered from 0.7 -> 0.6 by request: messages that only clear SUSPICIOUS by
-# a small margin (0.6-0.7) are now escalated straight to FRAUD/SCAM instead
-# of stopping at SUSPICIOUS. This trades more false positives on borderline
-# messages for catching more real scams earlier -- re-run eval_testset.py
-# against rakshak_eval_testset.json if this needs re-tuning; the 0.7 value
-# it replaces was not derived from that eval run the way SUSPICIOUS_THRESHOLD
-# above was, so there's no equivalent margin analysis to preserve here.
-FRAUD_THRESHOLD = 0.6
+# Lowered from 0.7 -> 0.6 -> 0.5 by request: any message that clears
+# SUSPICIOUS_THRESHOLD at all -- "slightly suspicious" included -- now also
+# clears FRAUD_THRESHOLD and is reported as SCAM rather than SUSPICIOUS.
+# Because this now equals SUSPICIOUS_THRESHOLD and predict() checks
+# `score >= FRAUD_THRESHOLD` before `score >= SUSPICIOUS_THRESHOLD`, the
+# SUSPICIOUS verdict is no longer reachable in practice for text messages:
+# every non-SAFE message is now SCAM. This trades a large increase in false
+# positives on borderline/ambiguous messages for never under-flagging a real
+# scam as "merely suspicious" -- re-run eval_testset.py against
+# rakshak_eval_testset.json if this needs re-tuning back toward a 3-way
+# split; the 0.7 value this replaces was derived from that eval run the way
+# SUSPICIOUS_THRESHOLD was, so there's no equivalent margin analysis
+# preserved at this setting.
+FRAUD_THRESHOLD = 0.5
 
 
 # Phrases that indicate a LEGITIMATE informational message rather than a request.
